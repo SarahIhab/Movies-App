@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, SafeAreaView} from 'react-native';
+import {View, SafeAreaView,Text} from 'react-native';
 import Search from '../components/search';
 import MoviesList from '../components/moviesList';
 import AllMovies from '../components/allMoviesList';
@@ -8,6 +8,9 @@ const Home = ()=>{
     const [movies, setMovies] = useState([]);
     const [allMovies, setAllMovies] = useState([]);
     const [inputChange, setInputChange] = useState(false);
+    const [apiPage, setAPIPage] = useState(1);
+    const [moviesJsonResponseArray, setMoviesJsonResponseArray] = useState([]);
+    //const [allMoviesInAPI, setAllMoviesInAPI] = useState([]);
 
     //mounting
     useEffect(()=>{
@@ -15,7 +18,7 @@ const Home = ()=>{
         //return <AllMovies movies = {movies} />
     },[]);
 
-    //updating mount
+    /*//updating mount
     useEffect(()=>{
         if(inputChange === false)
         {
@@ -27,16 +30,15 @@ const Home = ()=>{
             //return <MoviesList movies = {movies}/>;
         }
     },[inputChange]);
+    
+    {/*allMoviesInAPI={allMoviesInAPI} setAllMoviesInAPI={setAllMoviesInAPI}*/
 
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center'}}>
-            <Search setAllMovies={setAllMovies} setMovies={setMovies} setInputChange={setInputChange} />
-            {inputChange ? <MoviesList movies = {movies}/> : <AllMovies allMovies = {allMovies} />}
-            {/*{
-                movies? <MoviesList /> : <Text>Sorry the movie you requested is not available.</Text>
-            }*/}
-            
-            
+
+            <Search setAllMovies={setAllMovies} setMovies={setMovies} setInputChange={setInputChange} apiPage={apiPage} setMoviesJsonResponseArray = {setMoviesJsonResponseArray} moviesJsonResponseArray={moviesJsonResponseArray}/> 
+
+            {inputChange ? <MoviesList movies = {movies} /> : <AllMovies allMovies = {allMovies} setAPIPage={setAPIPage} apiPage={apiPage}/>}
         </SafeAreaView>
     );
 };
