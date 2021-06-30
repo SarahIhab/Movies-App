@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Text, TextInput, Button, View, ActivityIndicator, FlatList} from 'react-native';
+import {Text, TextInput, Button, View, ActivityIndicator, FlatList, Keyboard, Touchable} from 'react-native';
 
 const Search = (props) => {
 
@@ -53,7 +53,7 @@ const Search = (props) => {
 
             //console.log(FilteredMoviesArray);
             
-            /*if(props.apiPage === 1)
+            if(props.apiPage === 1)
             {
                 var FilteredMoviesArray = moviesJsonResponse.results.filter(function (el)
                     {
@@ -76,7 +76,7 @@ const Search = (props) => {
             }
             
 
-            for(const i=1; i<13;i++){
+            /*for(const i=1; i<13;i++){
                 const allMovieResponseFromAPI = await fetch(apiBaseURL + i);
                 const allMovieResponseFromAPIJSON = allMovieResponseFromAPI.json();
                 props.setAllMoviesInAPI(props.allMoviesInAPI.concat(allMovieResponseFromAPIJSON.results));
@@ -84,7 +84,7 @@ const Search = (props) => {
 
             console.log(props.allMoviesInAPI);*/
 
-            props.setMovies(FilteredMoviesArray); //I'm sending the json to the home to be used by other components
+            //props.setMovies(FilteredMoviesArray); //I'm sending the json to the home to be used by other components
             
             props.setMoviesJsonResponseArray(props.moviesJsonResponseArray.concat(moviesJsonResponse.results))
             props.setAllMovies(props.moviesJsonResponseArray.concat(moviesJsonResponse.results));
@@ -119,8 +119,18 @@ const Search = (props) => {
                 fetchUserData();
             }
 
+            Keyboard.dismiss();
+
         }}
         />
+
+        <Button 
+        title="Go Back"
+        onPress={()=>{
+            setInput('');
+            Keyboard.dismiss();
+        }}/>
+
         <Text> {isLoading ? <ActivityIndicator /> : null} </Text> 
 
     </View>

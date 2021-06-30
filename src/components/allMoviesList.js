@@ -27,10 +27,10 @@ const AllMovies = (props) =>{
         
     }
 
-    return <FlatList data={props.allMovies} keyExtractor={(item, index) => { return item.id; }} renderItem={({item, index})=>{
+    return <FlatList maxToRenderPerBatch={10} initialNumToRender={10} data={props.allMovies} keyExtractor={(item, index) => String(index)} renderItem={({item, index})=>{
         return <MovieItem item={item} />
     }}
-    onEndReached = {changePage}
+    onEndReached = {changePage} 
     //ListFooterComponent= {FooterButtons}
         >
     </FlatList>

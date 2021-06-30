@@ -11,8 +11,8 @@ const HomeStack = createStackNavigator();
 export default function App() {
   return <NavigationContainer>
     <HomeStack.Navigator>
-      <HomeStack.Screen name= 'Home' component={Home}/>
-      <HomeStack.Screen name= 'MovieDetails' component={MovieDetailsScreen}/>
+      <HomeStack.Screen name= 'Home' component={Home}options={{headerShown:false}}/>
+      <HomeStack.Screen name= 'MovieDetails' component={MovieDetailsScreen} options={{headerShown:false}}/>
     </HomeStack.Navigator>
   </NavigationContainer>
   
