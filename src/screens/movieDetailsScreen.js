@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet, ScrollView, ImageBackground, Platform, TouchableOpacity} from 'react-native';
+import {View, Text, Image, StyleSheet, ScrollView, FlatList,ImageBackground, Platform, TouchableOpacity} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AppLoading from 'expo-app-loading';
@@ -18,6 +18,7 @@ import {useFonts,
     Roboto_900Black_Italic,
   } from '@expo-google-fonts/roboto';
 import { auto } from 'async';
+import { useRef } from 'react';
 //import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 //import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 //{/*split("-").reverse().join("-")*/}
@@ -26,6 +27,7 @@ const MovieDetailsScreen = (props) =>{
     const {movie} = props.route.params;
     const navigation = useNavigation();
     const imgURL = "http://image.tmdb.org/t/p/w92" + movie.poster_path;
+    const scrollViewRef = useRef();
     let [fontsLoaded] = useFonts({Roboto_100Thin,
         Roboto_100Thin_Italic,
         Roboto_300Light,
@@ -44,7 +46,7 @@ const MovieDetailsScreen = (props) =>{
     }
     else{
 
-        return <ScrollView contentContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'center'}} style={styles.container}>
+        return <ScrollView contentContainerStyle={{flex: 1, alignItems: 'center', justifyContent: 'center'}} style={styles.container} ref={scrollViewRef} onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}>
         
         {/*Header*/}
         <ImageBackground source={{uri: imgURL}} resizeMode="stretch" style={styles.poster} imageStyle={{borderBottomRightRadius: 25, borderBottomLeftRadius: 25}}>
@@ -131,7 +133,8 @@ const MovieDetailsScreen = (props) =>{
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#ffffff" //242526 18191A
+        backgroundColor: "#ffffff", //242526 18191A
+        
     },
     poster: {
         //flex: 1,

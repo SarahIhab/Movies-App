@@ -10,13 +10,13 @@ const Home = ()=>{
     const [inputChange, setInputChange] = useState(false);
     const [apiPage, setAPIPage] = useState(1);
     const [moviesJsonResponseArray, setMoviesJsonResponseArray] = useState([]);
-    //const [allMoviesInAPI, setAllMoviesInAPI] = useState([]);
+    const [allMoviesInAPI, setAllMoviesInAPI] = useState([]);
 
-    //mounting
+    /*mounting
     useEffect(()=>{
         console.log("MOUNTING: ALL MOVIES LIST IS SHOWN");
         //return <AllMovies movies = {movies} />
-    },[]);
+    },[]);*/
 
     /*//updating mount
     useEffect(()=>{
@@ -36,7 +36,7 @@ const Home = ()=>{
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center'}}>
 
-            <Search setAllMovies={setAllMovies} setMovies={setMovies} setInputChange={setInputChange} apiPage={apiPage} setMoviesJsonResponseArray = {setMoviesJsonResponseArray} moviesJsonResponseArray={moviesJsonResponseArray}/> 
+            <Search setAllMovies={setAllMovies} setMovies={setMovies} setInputChange={setInputChange} apiPage={apiPage} setMoviesJsonResponseArray = {setMoviesJsonResponseArray} moviesJsonResponseArray={moviesJsonResponseArray} allMoviesInAPI={allMoviesInAPI} setAllMoviesInAPI={setAllMoviesInAPI}/> 
 
             {inputChange ? <MoviesList movies = {movies} /> : <AllMovies allMovies = {allMovies} setAPIPage={setAPIPage} apiPage={apiPage}/>}
         </SafeAreaView>

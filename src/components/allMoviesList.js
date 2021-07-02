@@ -27,7 +27,7 @@ const AllMovies = (props) =>{
         
     }
 
-    return <FlatList maxToRenderPerBatch={10} initialNumToRender={10} data={props.allMovies} keyExtractor={(item, index) => String(index)} renderItem={({item, index})=>{
+    return <FlatList maxToRenderPerBatch={10} initialNumToRender={10} keyExtractor={item => item.id} data={props.allMovies}  renderItem={({item, index})=>{
         return <MovieItem item={item} />
     }}
     onEndReached = {changePage} 
