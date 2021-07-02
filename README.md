@@ -8,7 +8,7 @@
 ## Application description: 
 A react native mobile application to show and search movies.
 
-## Code explination: 
+## Code explanation: 
 There are two main screens: 
 1. Home
 2. movieDetailsScreen 
