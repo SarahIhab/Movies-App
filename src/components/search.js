@@ -1,332 +1,381 @@
-import React, {useState, useEffect, useCallback} from 'react';
-import { render } from 'react-dom';
-import {Text,FlatList ,TextInput, Button, View, ActivityIndicator, Keyboard, StyleSheet, Dimensions, TouchableOpacity, Image} from 'react-native';
-import {SearchBar} from 'react-native-elements';
-import App from '../../App';
+import React, { useState, useEffect, useCallback } from "react";
+import { Pressable } from "react-native";
+import {
+  Text,
+  TextInput,
+  View,
+  ActivityIndicator,
+  Keyboard,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  Image,
+} from "react-native";
+import AppLoading from "expo-app-loading";
+import {
+  useFonts,
+  Roboto_100Thin,
+  Roboto_100Thin_Italic,
+  Roboto_300Light,
+  Roboto_300Light_Italic,
+  Roboto_400Regular,
+  Roboto_400Regular_Italic,
+  Roboto_500Medium,
+  Roboto_500Medium_Italic,
+  Roboto_700Bold,
+  Roboto_700Bold_Italic,
+  Roboto_900Black,
+  Roboto_900Black_Italic,
+} from "@expo-google-fonts/roboto";
 
 const Search = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [input, setInput] = useState("");
+  const [backBtnVisibility, setBackBtnVisibility] = useState("none");
+  var [allMoviesearch, setallMoviesearch] = useState([]);
+  var [successfulSearches, setSuccessfulSearches] = useState([]);
+  const [temp, setValueTemp] = useState("none");
+  var moviesResponse;
+  var moviesJsonResponse;
+  //var allMovieResponseFromAPI;
+  //var allMovieResponseFromAPIJSON;
+  let [fontsLoaded] = useFonts({
+    Roboto_100Thin,
+    Roboto_100Thin_Italic,
+    Roboto_300Light,
+    Roboto_300Light_Italic,
+    Roboto_400Regular,
+    Roboto_400Regular_Italic,
+    Roboto_500Medium,
+    Roboto_500Medium_Italic,
+    Roboto_700Bold,
+    Roboto_700Bold_Italic,
+    Roboto_900Black,
+    Roboto_900Black_Italic,
+  });
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [input, setInput] = useState('');
-    const [backBtnVisibility, setBackBtnVisibility] = useState(false);
-    var [allMovieResponseFromAPI, setValueData]=useState([]);
-    var [successfulSearches, setSuccessfulSearches]=useState([]);
-    var moviesResponse;
-    var moviesJsonResponse;
-    var allMovieResponseFromAPI;
-    var allMovieResponseFromAPIJSON;
-    var [flag, setFlag]=useState(false);
-    const [temp, setValueTemp]=useState('none');
+  const apiBaseURL =
+    "http://api.themoviedb.org/3/search/movie?api_key=b3070a5d3abfb7c241d2688d066914e7&query=Rocky&page=";
 
-    
+  /*Effects*/
 
-    useEffect(()=>{
-        console.log("API PAGE UPDATE: ", props.apiPage);
-        //if(input.length === 0)
-        if(props.apiPage<=12)
-        {
-            fetchUserData();
-        }
-        
-    },[props.apiPage])
-
-    
-    
-    const apiBaseURL = 'http://api.themoviedb.org/3/search/movie?api_key=b3070a5d3abfb7c241d2688d066914e7&query=Rocky&page=';
-
-    useEffect(()=>{
-        console.log("MOUNTINGGGGGGGG");
-        var getAllMovies = async()=>{
-            for(var i=1; i<13;i++){
-
-                allMovieResponseFromAPI = await fetch(apiBaseURL + i); 
-                allMovieResponseFromAPIJSON = await  allMovieResponseFromAPI.json();
-                
-                //console.log("ALLLLLLLLLLLLL : " , allMovieResponseFromAPIJSON);
-                console.log("IIIIIII " , i);
-                console.log("SHOWWWW " , i);
-                //console.log("ALLMOVIES RESPONSE" , allMovieResponseFromAPI);
-                //var allMovieResponseFromAPIJSON = allMovieResponseFromAPI.json();
-                //props.setAllMoviesInAPI(props.allMoviesInAPI.concat(allMovieResponseFromAPIJSON.results));
-                //props.allMoviesInAPI.push(allMovieResponseFromAPIJSON.results);
-                //console.log("LENGTHHHH " , props.allMoviesInAPI.length);
-            }
-        }
-
-        getAllMovies();
-        
-
-    
-    },[])
-
-    
-
-    
-
-
-    
-    useEffect(()=>{
-        if(input.length === 0)
-        {
-            fetchUserData();
-            props.setInputChange(false);
-        }
-        else{
-            props.setInputChange(true);
-        }
-    },[input]);
-
-    const showBackButton = () =>{
-        if(input.length !== 0)
-        {
-            setBackBtnVisibility(false)
-        }
-        else if (input.length === 0){
-            setBackBtnVisibility(true);
-        }
+  //Effect to update the page number in pagination
+  useEffect(() => {
+    //console.log("API PAGE UPDATE: ", props.apiPage);
+    //if(input.length === 0)
+    if (props.apiPage <= 12) {
+      fetchUserData();
     }
+  }, [props.apiPage]);
 
-    useEffect(()=>{
-        showBackButton();
-    },[input])
+  /*useEffect(() => {
+    console.log("MOUNTINGGGGGGGG");
+    var getAllMovies = async () => {
+      for (var i = 1; i < 13; i++) {
+        allMovieResponseFromAPI = await fetch(apiBaseURL + i);
+        allMovieResponseFromAPIJSON = await allMovieResponseFromAPI.json();
 
-    var search = async (input) =>{
-        moviesResponse = await fetch(apiBaseURL + props.apiPage); 
-        moviesJsonResponse = await moviesResponse.json();
-    if(props.apiPage === 1)
-    {
-        var FilteredMoviesArray = moviesJsonResponse.results.filter(function (el)
-            {
-                //if (el.title.toUpperCase())
-                if(el.title.toUpperCase() === input.toUpperCase())
-                {
-                    var found=false;
-                    for(var i=0; i<successfulSearches.length; i++) 
-                    {
-                        if (successfulSearches[i]===el.title){
-                            found = true;
-                            break;
-                        }
-                    }
-                    if(found ===false){
-                        if (successfulSearches.length===10){
-                            successfulSearches.reverse().pop()
-                            successfulSearches.reverse()
-                        }
-                        successfulSearches.push(el.title);
-                    }
-                }
-                return el.title.toUpperCase() === input.toUpperCase();
-            }
-        );
-
-        props.setMovies(FilteredMoviesArray); //I'm sending the json to the home to be used by other components
-    }
-    else{
-
-        
-
-        var FilteredMoviesArray = props.moviesJsonResponseArray.filter(function (el)
-            {
-                //if (el.title.toUpperCase())
-                if(el.title.toUpperCase() === input.toUpperCase())
-                {
-                    var found=false;
-                    for(var i=0; i<successfulSearches.length; i++) 
-                    {
-                        if (successfulSearches[i]===el.title){
-                            found = true;
-                            break;
-                        }
-                    }
-                    if(found ===false){
-                        if (successfulSearches.length===10){
-                            successfulSearches.reverse().pop()
-                            successfulSearches.reverse()
-                        }
-                        successfulSearches.push(el.title);
-                    }
-                }
-                return el.title.toUpperCase() === input.toUpperCase();
-            }
-        );
-
-        props.setMovies(FilteredMoviesArray);
-    }
-    }
-
-    const fetchUserData = async() => {
-        setIsLoading(true);
-        console.log(input);
-        {/*if(input.slice(-1) === ' ')
-            {
-                const valueWithoutWhiteSpace = input.slice(0, -1);
-                console.log("SLICED INPUT", valueWithoutWhiteSpace);
-                setInput(valueWithoutWhiteSpace);
-                
-            }*/}
-        
-        try{
-            //const moviesResponse = await fetch(apiBaseURL + props.apiPage); 
-            //const moviesJsonResponse = await moviesResponse.json();
-
-             moviesResponse = await fetch(apiBaseURL + props.apiPage); 
-             moviesJsonResponse = await moviesResponse.json();
-            
-            
-            
-            //var allMovieResponseFromAPI = await fetch(apiBaseURL + 1);
-            //console.log("ALLMOVIES RESPONSE" , allMovieResponseFromAPI);
-                
-
-                
-
-            /*var FilteredMoviesArray = moviesJsonResponse.results.filter(function (el)
-                {
-                    //if (el.title.toUpperCase())
-                    return el.title === input;
-                }
-            );*/
-
-            //console.log(FilteredMoviesArray);
-            
-            
-
-            search(input);
-            
-
-            
-
-            //props.setMovies(FilteredMoviesArray); //I'm sending the json to the home to be used by other components
-            
-            props.setMoviesJsonResponseArray(props.moviesJsonResponseArray.concat(moviesJsonResponse.results))
-            props.setAllMovies(props.moviesJsonResponseArray.concat(moviesJsonResponse.results));
-            setIsLoading(false);
-        }
-        catch(err){
-            console.log("ERROR", err);
-        }
-        
+        //console.log("ALLLLLLLLLLLLL : " , allMovieResponseFromAPIJSON);
+        //console.log("ALLMOVIES RESPONSE" , allMovieResponseFromAPI);
+        //var allMovieResponseFromAPIJSON = allMovieResponseFromAPI.json();
+        //props.setAllMoviesInAPI(props.allMoviesInAPI.concat(allMovieResponseFromAPIJSON.results));
+        //props.allMoviesInAPI.push(allMovieResponseFromAPIJSON.results);
+        //console.log("LENGTHHHH " , props.allMoviesInAPI.length);
+      }
     };
-    var showSearchQueries = (flag)=>{
-        //console.log('hena');
-        //setFlag(prevFlag => !prevFlag );
-        if(flag==true){
-            setValueTemp("block");
-        }
-        else{
-            setValueTemp("none");
-        }
-    };
-    //console.log("SUCCESSFUL SEARCHES......",successfulSearches);
 
-    /*const showSearchQueries=()=>{
-        console.log("Hello");
-        // return <FlatList data={successfulSearches} renderItem={({item, index})=>{
-           <View >{...successfulSearches.map(item=>
-                <Text>{item}</Text>    
-            )}
-            
-            </View>
-        //     console.log(item);
-        //     return <Text>{item}</Text>
-        // }}>
+    getAllMovies();
+  }, []);*/
 
-        // </FlatList>
-        
-        }*/
-    const showCallback = useCallback((flag) => {
-        showSearchQueries(flag)
-    }, [showSearchQueries])
+  //Effect to keep up with the input change
+  useEffect(() => {
+    if (input.length === 0) {
+      fetchUserData();
+      props.setInputChange(false);
+    } else {
+      props.setInputChange(true);
+    }
+  }, [input]);
+
+  //Effect to show or hide the back button depending on the user input
+  useEffect(() => {
+    showBackButton();
+  }, [input]);
+
+  /*Callbacks*/
+
+  //Callback used to call the function that displays the back button to avoid re-rendering of the state
+  const showBackButtonCallback = useCallback(
+    (show) => {
+      showBackButton(show);
+    },
+    [showBackButton]
+  );
+
+  //Callback used to call the function that displays the search queries to avoid re-rendering of the state
+  const showCallback = useCallback(
+    (flag) => {
+      showSearchQueries(flag);
+    },
+    [showSearchQueries]
+  );
+
+  /*Functions*/
+
+  //Function that searches for the input
+  var search = async (input) => {
+    moviesResponse = await fetch(apiBaseURL + props.apiPage);
+    moviesJsonResponse = await moviesResponse.json();
+    if (props.apiPage === 1) {
+      var FilteredMoviesArray = moviesJsonResponse.results.filter(function (
+        el
+      ) {
+        //if (el.title.toUpperCase())
+        if (el.title.toUpperCase() === input.toUpperCase()) {
+          var found = false;
+          for (var i = 0; i < successfulSearches.length; i++) {
+            if (successfulSearches[i] === el.title) {
+              found = true;
+              break;
+            }
+          }
+          if (found === false) {
+            if (successfulSearches.length === 10) {
+              successfulSearches.reverse().pop();
+              successfulSearches.reverse();
+            }
+            successfulSearches.push(el.title);
+          }
+        }
+        return el.title.toUpperCase() === input.toUpperCase();
+      });
+
+      props.setMovies(FilteredMoviesArray); //I'm sending the json to the home to be used by other components
+    } else {
+      var FilteredMoviesArray = props.moviesJsonResponseArray.filter(function (
+        el
+      ) {
+        //if (el.title.toUpperCase())
+        if (el.title.toUpperCase() === input.toUpperCase()) {
+          var found = false;
+          for (var i = 0; i < successfulSearches.length; i++) {
+            if (successfulSearches[i] === el.title) {
+              found = true;
+              break;
+            }
+          }
+          if (found === false) {
+            if (successfulSearches.length === 10) {
+              successfulSearches.reverse().pop();
+              successfulSearches.reverse();
+            }
+            successfulSearches.push(el.title);
+          }
+        }
+        return el.title.toUpperCase() === input.toUpperCase();
+      });
+
+      props.setMovies(FilteredMoviesArray);
+    }
+  };
+
+  //Function that fetches the movie data
+  const fetchUserData = async () => {
+    setIsLoading(true);
+
+    try {
+      moviesResponse = await fetch(apiBaseURL + props.apiPage);
+      moviesJsonResponse = await moviesResponse.json();
+
+      search(input);
+
+      props.setMoviesJsonResponseArray(
+        props.moviesJsonResponseArray.concat(moviesJsonResponse.results)
+      );
+      props.setAllMovies(
+        props.moviesJsonResponseArray.concat(moviesJsonResponse.results)
+      );
+      setIsLoading(false);
+    } catch (err) {
+      console.log("ERROR", err);
+    }
+  };
+
+  //Function that displays the search queries
+  var showSearchQueries = (flag) => {
+    if (flag == true) {
+      setValueTemp("block");
+    } else {
+      setValueTemp("none");
+    }
+  };
+
+  //Function that displays the back button queries
+  const showBackButton = () => {
+    if (input.length !== 0) {
+      setBackBtnVisibility("block");
+    } else if (input.length === 0) {
+      setBackBtnVisibility("none");
+    }
+  };
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  } else {
     return (
-    <View >
-        <View style={{flexDirection: 'row', justifyContent: "center", alignItems: "center", marginTop: 35}}>
-            
-        {/*<Button 
-            title="Go Back"
-            onPress={()=>{
-                setInput('');
+      <View style={styles.container}>
+        <View style={styles.topBar}>
+          {/*Back Button*/}
+          <View style={{ display: backBtnVisibility }}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => {
+                setInput("");
                 Keyboard.dismiss();
-            }}
-        disabled={backBtnVisibility}/>*/}
+              }}
+            >
+              <Image
+                source={require("../../assets/left-arrow.png")}
+                style={styles.backButtonImg}
+              />
+            </TouchableOpacity>
+          </View>
 
-            <View style={styles.backButtonView2}>
-                <TouchableOpacity style={styles.backButton} onPress={()=>{setInput(''); Keyboard.dismiss();} }disabled={backBtnVisibility}>
-                    <Image source={require("../../assets/backBtn.png")} style={styles.backButtonImg}/>
-                </TouchableOpacity>
-            </View>
-            
-            <TextInput 
-            value = {input}
-            placeholder="Enter the movie name" 
-            onChangeText={(val)=>{
-                //validation
-                setInput(val);
-                
-            }} 
-            onFocus={() => showCallback(true)}
-            onBlur={() => showCallback(false)}
+          {/*Search Bar*/}
+          <TextInput
             style={styles.textInput}
-
-            />
-            
-
-            <Button 
-            title="Search"
-            
-            onPress={() => {
-
-                if(input)
-                {
-                    fetchUserData();
-                }
-
-                Keyboard.dismiss();
+            value={input}
+            placeholder="Enter the movie name"
+            onChangeText={(val) => {
+              setInput(val);
             }}
+            onFocus={() => {
+              showCallback(true);
+              showBackButtonCallback();
+            }}
+            onBlur={() => {
+              showCallback(false);
+              showBackButtonCallback();
+            }}
+          />
 
+          {/*Search Button*/}
+          <Pressable
             style={styles.searchButton}
-        />
+            onPress={() => {
+              if (input) {
+                fetchUserData();
+              }
 
-        </View>
-        
-        <View style={{display:temp}}>
-            {successfulSearches.map(item=>
-            <Text onPress={()=>{
-                setInput(item);
-                search(item);
-            }}>{item}</Text>    
-            )}
-
-        </View>
-        
-        <View style={{justifyContent:"center", alignItems:"center", margin: 20}}>
-            <Text> {isLoading ? <ActivityIndicator /> : null} </Text> 
+              Keyboard.dismiss();
+            }}
+          >
+            <Text style={styles.searchButtonText}>Search</Text>
+          </Pressable>
         </View>
 
-    </View>
+        {/*Search Queries List(styles.searchQueriesList,*/}
+        <View
+          style={{
+            display: temp,
+            borderWidth: 1,
+            borderColor: "white",
+            width: Dimensions.get("window").width * 0.5,
+            alignItems: "center",
+            marginLeft: "15%",
+            backgroundColor: "white",
+            marginTop: "-1%",
+            borderRadius: 5,
+          }}
+        >
+          {successfulSearches.map((item, index) => (
+            <View>
+              <Text
+                style={styles.searchQueriesListText}
+                onPress={() => {
+                  setInput(item);
+                  search(item);
+                }}
+              >
+                {item}
+              </Text>
+              <View style={styles.lineStyle} />
+            </View>
+          ))}
+        </View>
+
+        {/*Loading Activity Indicator*/}
+        <View
+          style={{ justifyContent: "center", alignItems: "center", margin: 20 }}
+        >
+          <Text> {isLoading ? <ActivityIndicator /> : null} </Text>
+        </View>
+      </View>
     );
+  }
 };
 
 const styles = StyleSheet.create({
-    textInput: {
-        //marginTop: 35,
-        borderWidth: 1,
-        borderColor: 'black',
-        borderRadius: 15,
-        width: Dimensions.get('window').width * 0.7,
-        padding:15
-    },
+  container: {
+    width: "100%",
+    backgroundColor: "#242526",
+  },
+  topBar: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 35,
+  },
 
-    backButtonImg:{
-        width: 20,
-        height:20
+  backButton: {
+    marginRight: "5%",
+  },
 
-    },
+  backButtonImg: {
+    width: 20,
+    height: 20,
+    backgroundColor: "darkorange",
+    borderRadius: 4,
+  },
 
-    backButtonView2:{
-        //marginTop: Platform.OS === "ios" ? 40 : 20,
-        marginRight: 20
-    },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 15,
+    width: Dimensions.get("window").width * 0.6,
+    padding: 15,
+    fontFamily: "Roboto_400Regular",
+    backgroundColor: "white",
+  },
+
+  searchButton: {
+    marginLeft: "3%",
+    borderRadius: 9,
+    backgroundColor: "darkorange",
+    padding: 11,
+  },
+
+  searchButtonText: {
+    color: "white",
+    fontFamily: "Roboto_500Medium",
+    fontSize: 16,
+  },
+
+  searchQueriesList: {
+    marginTop: 10,
+  },
+
+  searchQueriesListText: {
+    alignSelf: "center",
+    color: "black",
+    fontFamily: "Roboto_400Regular",
+    fontSize: 15,
+  },
+
+  lineStyle: {
+    borderWidth: 0.5,
+    borderColor: "black",
+    margin: 10,
+  },
 });
 
 export default Search;
